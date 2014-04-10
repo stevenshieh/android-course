@@ -28,4 +28,13 @@
         android:onClick="send"
         android:text="Button" />
 
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editText1"
+        android:layout_alignTop="@+id/button1"
+        android:layout_marginLeft="17dp"
+        android:text="Encrypt" />
+
 </RelativeLayout>
