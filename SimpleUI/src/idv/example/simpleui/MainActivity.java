@@ -5,11 +5,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -74,22 +76,38 @@ public class MainActivity extends ActionBarActivity {
 			text1 = (EditText) rootView.findViewById(R.id.editText1);
 
 			button1.setText("Send");
-
 			button1.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-
-					String text = text1.getText().toString();
-
-					Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT)
-							.show();
-
-					text1.getText().clear();
+					send();
+				}
+			});
+			
+			text1.setOnKeyListener(new OnKeyListener() {
+				
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					if(event.getAction() == KeyEvent.ACTION_DOWN && 
+							keyCode == KeyEvent.KEYCODE_ENTER){
+						
+						send();
+						return true;
+					}
+					return false;
 				}
 			});
 
 			return rootView;
+		}
+		
+		private void send() {
+			String text = text1.getText().toString();
+
+			Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT)
+					.show();
+
+			text1.getText().clear();
 		}
 	}
 
