@@ -1,6 +1,9 @@
-package com.example.simplerelativelayout;
+package idv.example.simplelistview;
 
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -12,10 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import android.os.Build;
 
 public class MainActivity extends ActionBarActivity {
@@ -56,8 +60,7 @@ public class MainActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		private Spinner month;
-		private Spinner date;
+		private ListView listview;
 
 		public PlaceholderFragment() {
 		}
@@ -68,45 +71,50 @@ public class MainActivity extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
 
-			month = (Spinner) rootView.findViewById(R.id.month);
-			date = (Spinner) rootView.findViewById(R.id.date);
+			listview = (ListView) rootView.findViewById(R.id.listView1);
 
-			String[] a = getResources().getStringArray(R.array.month);
-			ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-					android.R.layout.simple_spinner_item, a);
-
-			month.setAdapter(adapter);
-			month.setOnItemSelectedListener(new OnItemSelectedListener() {
+			listview.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemSelected(AdapterView<?> adapterView, View view,
+				public void onItemClick(AdapterView<?> adapterView, View view,
 						int position, long id) {
-					
-					Calendar instance = Calendar.getInstance();
-					instance.set(Calendar.MONTH, position);
-					
-					setDateSpinner(instance.getActualMaximum(Calendar.DAY_OF_MONTH));
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
-					
+					String desc = getResources().getStringArray(
+							R.array.imageDesc)[position];
+
+					Toast.makeText(getActivity(), desc, Toast.LENGTH_SHORT)
+							.show();
 				}
 			});
 
-			return rootView;
-		}
+			String[] text = getResources().getStringArray(R.array.list_item);
 
-		private void setDateSpinner(int limit) {
-			String[] b = new String[limit];
-			for (int i = 0; i < b.length; i++) {
-				b[i] = String.valueOf(i + 1);
+			// ArrayAdapter<String> adapter = new
+			// ArrayAdapter<String>(getActivity(),
+			// android.R.layout.simple_list_item_1, text);
+
+			int[] images = new int[] { R.drawable.img1, R.drawable.img2,
+					R.drawable.img3, R.drawable.img4, R.drawable.img5,
+					R.drawable.img6, R.drawable.img7, R.drawable.img8,
+					R.drawable.img9, R.drawable.img10 };
+
+			List<Map<String, Object>> data = new ArrayList<>();
+
+			for (int i = 0; i < text.length; i++) {
+				Map<String, Object> item = new HashMap<>();
+				item.put("text", text[i]);
+				item.put("image", images[i]);
+				data.add(item);
 			}
 
-			ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getActivity(),
-					android.R.layout.simple_spinner_item, b);
+			String[] from = new String[] { "text", "image" };
+			int[] to = new int[] { R.id.textView1, R.id.imageView1 };
+			SimpleAdapter adapter = new SimpleAdapter(getActivity(), data,
+					R.layout.list_view, from, to);
 
-			date.setAdapter(adapter2);
+			listview.setAdapter(adapter);
+
+			return rootView;
 		}
 	}
 
