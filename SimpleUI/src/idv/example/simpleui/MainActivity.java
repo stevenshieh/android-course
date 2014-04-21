@@ -3,6 +3,8 @@ package idv.example.simpleui;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -11,11 +13,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
 
@@ -61,9 +67,13 @@ public class MainActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		private static final String TEXT_INPUT = "textInput";
+		private static final String ENCRYPT_CHECKED = "encryptChecked";
 		private Button button1;
 		private EditText text1;
 		private CheckBox encrypt;
+		private SharedPreferences sp;
+		private Editor editor;
 
 		public PlaceholderFragment() {
 		}
@@ -78,7 +88,17 @@ public class MainActivity extends ActionBarActivity {
 			text1 = (EditText) rootView.findViewById(R.id.editText1);
 			encrypt = (CheckBox) rootView.findViewById(R.id.checkBox1);
 			
-
+			sp = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+			editor = sp.edit();
+			
+			encrypt.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					editor.putBoolean(ENCRYPT_CHECKED, isChecked);
+				}
+			});
+			
 			button1.setText("Send");
 			button1.setOnClickListener(new OnClickListener() {
 
@@ -97,10 +117,16 @@ public class MainActivity extends ActionBarActivity {
 						
 						send();
 						return true;
+					} else {
+						editor.putString(TEXT_INPUT, text1.getText().toString());
+						editor.commit();
 					}
 					return false;
 				}
 			});
+			
+			text1.setText(sp.getString(TEXT_INPUT, ""));
+			encrypt.setChecked(sp.getBoolean(ENCRYPT_CHECKED, false));
 
 			return rootView;
 		}
