@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,6 +14,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 public class MessageActivity extends Activity {
 
@@ -31,9 +39,53 @@ public class MessageActivity extends Activity {
 		String text = getIntent().getStringExtra("text");
 
 		Log.d("debug", "intent extra:" + text);
+		
+		saveData(text);
 
-		writeFile(text);
-		textView.setText(readFile());
+//		writeFile(text);
+//		textView.setText(readFile());
+	}
+
+	private void saveData(String text) {
+		ParseObject testObject = new ParseObject("Message");
+		testObject.put("text",text);
+		testObject.saveInBackground(new SaveCallback() {
+			
+			@Override
+			public void done(ParseException e) {
+				finished();
+				if( e == null ) {
+					loadData();
+				} else {
+					e.printStackTrace();
+				}
+			}
+
+		});
+	}
+
+	private void loadData() {
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Message");
+		query.findInBackground(new FindCallback<ParseObject>() {
+		    public void done(List<ParseObject> messages, ParseException e) {
+		        if (e == null) {
+		        	
+		        	StringBuffer content = new StringBuffer();
+		        	
+		        	for(ParseObject message : messages) {
+		        		content.append(message.getString("text")).append("\n");
+		        	}
+		        	
+		        	textView.setText(content.toString());
+		        } else {
+		        	e.printStackTrace();
+		        }
+		    }
+		});
+	}
+	
+	private void finished() {
+		Toast.makeText(this, "save finished.", Toast.LENGTH_SHORT).show();
 	}
 
 	private void writeFile(String text) {

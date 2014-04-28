@@ -26,6 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
 
+import com.parse.Parse;
+import com.parse.ParseAnalytics;
+import com.parse.ParseObject;
+
 public class MainActivity extends ActionBarActivity {
 
 	public void send(View view) {
@@ -41,6 +45,10 @@ public class MainActivity extends ActionBarActivity {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
+
+		Parse.initialize(this, "52SSxGlsI9z7U01hQAXXIi0lFa1n183C2YGwFnZG",
+				"eNQC2poRiw5SHwWJVTDLOaM0vuFwYsnHYbQHITkP");
+		
 	}
 
 	@Override
@@ -88,18 +96,19 @@ public class MainActivity extends ActionBarActivity {
 			button1 = (Button) rootView.findViewById(R.id.button1);
 			text1 = (EditText) rootView.findViewById(R.id.editText1);
 			encrypt = (CheckBox) rootView.findViewById(R.id.checkBox1);
-			
+
 			sp = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
 			editor = sp.edit();
-			
+
 			encrypt.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
+
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked) {
 					editor.putBoolean(ENCRYPT_CHECKED, isChecked);
 				}
 			});
-			
+
 			button1.setText("Send");
 			button1.setOnClickListener(new OnClickListener() {
 
@@ -108,14 +117,14 @@ public class MainActivity extends ActionBarActivity {
 					send();
 				}
 			});
-			
+
 			text1.setOnKeyListener(new OnKeyListener() {
-				
+
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					if(event.getAction() == KeyEvent.ACTION_DOWN && 
-							keyCode == KeyEvent.KEYCODE_ENTER){
-						
+					if (event.getAction() == KeyEvent.ACTION_DOWN
+							&& keyCode == KeyEvent.KEYCODE_ENTER) {
+
 						send();
 						return true;
 					} else {
@@ -125,32 +134,31 @@ public class MainActivity extends ActionBarActivity {
 					return false;
 				}
 			});
-			
+
 			text1.setText(sp.getString(TEXT_INPUT, ""));
 			encrypt.setChecked(sp.getBoolean(ENCRYPT_CHECKED, false));
 
 			return rootView;
 		}
-		
+
 		private void send() {
 			String text = text1.getText().toString();
 
-			if(encrypt.isChecked()) {
+			if (encrypt.isChecked()) {
 				text = String.valueOf(text.hashCode());
 			}
-			
-			Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT)
-					.show();
+
+			Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 
 			text1.getText().clear();
-			
+
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), MessageActivity.class);
-			
+
 			intent.putExtra("text", text);
-			
+
 			getActivity().startActivity(intent);
-			
+
 		}
 	}
 
