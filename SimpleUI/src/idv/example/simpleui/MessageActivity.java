@@ -13,6 +13,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ public class MessageActivity extends Activity {
 
 	private static final String FILE_NAME = "message.txt";
 	private TextView textView;
+	private ProgressBar progressBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class MessageActivity extends Activity {
 		setContentView(R.layout.activity_message);
 
 		textView = (TextView) findViewById(R.id.textView1);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 
 		String text = getIntent().getStringExtra("text");
 
@@ -77,6 +81,7 @@ public class MessageActivity extends Activity {
 					}
 
 					textView.setText(content.toString());
+					progressBar.setVisibility(View.GONE);
 				} else {
 					e.printStackTrace();
 				}
