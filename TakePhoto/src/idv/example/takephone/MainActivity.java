@@ -3,6 +3,7 @@ package idv.example.takephone;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.provider.MediaStore;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -42,6 +44,10 @@ public class MainActivity extends ActionBarActivity {
 		if (id == R.id.action_photo) {
 			
 			Log.d("debug", "action menu photo.");
+			
+			Intent intent = new Intent();
+			intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivity(intent);
 			
 			return true;
 		}
