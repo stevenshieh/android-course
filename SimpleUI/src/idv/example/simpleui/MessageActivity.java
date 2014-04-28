@@ -39,22 +39,22 @@ public class MessageActivity extends Activity {
 		String text = getIntent().getStringExtra("text");
 
 		Log.d("debug", "intent extra:" + text);
-		
+
 		saveData(text);
 
-//		writeFile(text);
-//		textView.setText(readFile());
+		// writeFile(text);
+		// textView.setText(readFile());
 	}
 
 	private void saveData(String text) {
 		ParseObject testObject = new ParseObject("Message");
-		testObject.put("text",text);
+		testObject.put("text", text);
 		testObject.saveInBackground(new SaveCallback() {
-			
+
 			@Override
 			public void done(ParseException e) {
 				finished();
-				if( e == null ) {
+				if (e == null) {
 					loadData();
 				} else {
 					e.printStackTrace();
@@ -67,23 +67,23 @@ public class MessageActivity extends Activity {
 	private void loadData() {
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Message");
 		query.findInBackground(new FindCallback<ParseObject>() {
-		    public void done(List<ParseObject> messages, ParseException e) {
-		        if (e == null) {
-		        	
-		        	StringBuffer content = new StringBuffer();
-		        	
-		        	for(ParseObject message : messages) {
-		        		content.append(message.getString("text")).append("\n");
-		        	}
-		        	
-		        	textView.setText(content.toString());
-		        } else {
-		        	e.printStackTrace();
-		        }
-		    }
+			public void done(List<ParseObject> messages, ParseException e) {
+				if (e == null) {
+
+					StringBuffer content = new StringBuffer();
+
+					for (ParseObject message : messages) {
+						content.append(message.getString("text")).append("\n");
+					}
+
+					textView.setText(content.toString());
+				} else {
+					e.printStackTrace();
+				}
+			}
 		});
 	}
-	
+
 	private void finished() {
 		Toast.makeText(this, "save finished.", Toast.LENGTH_SHORT).show();
 	}
@@ -117,10 +117,8 @@ public class MessageActivity extends Activity {
 
 			return sb.toString();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -133,14 +131,14 @@ public class MessageActivity extends Activity {
 		File docDir = Environment
 				.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
 
-		if(docDir.exists() == false) {
+		if (docDir.exists() == false) {
 			docDir.mkdirs();
 		}
-		
-//		Environment.getExternalStorageDirectory();
-		
+
+		// Environment.getExternalStorageDirectory();
+
 		File file = new File(docDir, FILE_NAME);
-		
+
 		text += "\n";
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
