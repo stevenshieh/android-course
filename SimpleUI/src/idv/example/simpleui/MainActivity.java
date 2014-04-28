@@ -156,6 +156,7 @@ public class MainActivity extends ActionBarActivity {
 			intent.setClass(getActivity(), MessageActivity.class);
 
 			intent.putExtra("text", text);
+			intent.putExtra("checkBox", encrypt.isChecked());
 
 			getActivity().startActivity(intent);
 

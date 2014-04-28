@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.R.anim;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -15,7 +19,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +34,11 @@ import com.parse.SaveCallback;
 public class MessageActivity extends Activity {
 
 	private static final String FILE_NAME = "message.txt";
-	private TextView textView;
+
+	private ListView listView;
 	private ProgressBar progressBar;
 	private ProgressDialog progressDialog;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -39,27 +46,29 @@ public class MessageActivity extends Activity {
 
 		setContentView(R.layout.activity_message);
 
-		textView = (TextView) findViewById(R.id.textView1);
+		listView = (ListView) findViewById(R.id.listView1);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setTitle("Message");
 		progressDialog.setMessage("Loading ... ");
 		progressDialog.setCancelable(false);
 		progressDialog.show();
-		
+
 		String text = getIntent().getStringExtra("text");
+		boolean isChecked = getIntent().getBooleanExtra("checkBox", false);
 
 		Log.d("debug", "intent extra:" + text);
 
-		saveData(text);
+		saveData(text, isChecked);
 
 		// writeFile(text);
 		// textView.setText(readFile());
 	}
 
-	private void saveData(String text) {
+	private void saveData(String text, boolean isChecked) {
 		ParseObject testObject = new ParseObject("Message");
 		testObject.put("text", text);
+		testObject.put("checkBox", isChecked);
 		testObject.saveInBackground(new SaveCallback() {
 
 			@Override
@@ -77,17 +86,32 @@ public class MessageActivity extends Activity {
 
 	private void loadData() {
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Message");
+		query.orderByAscending("createdAt");
 		query.findInBackground(new FindCallback<ParseObject>() {
 			public void done(List<ParseObject> messages, ParseException e) {
 				if (e == null) {
 
-					StringBuffer content = new StringBuffer();
+					List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+					String[] from = new String[] { "text", "checkBox" };
+					int[] to = new int[] { android.R.id.text1,
+							android.R.id.text2 };
+					SimpleAdapter adapter = new SimpleAdapter(
+							MessageActivity.this, data,
+							android.R.layout.simple_list_item_2, from, to);
+
+					// StringBuffer content = new StringBuffer();
 
 					for (ParseObject message : messages) {
-						content.append(message.getString("text")).append("\n");
+
+						Map<String, Object> item = new HashMap<String, Object>();
+						item.put("text", message.getString("text"));
+						item.put("checkBox", message.getBoolean("checkBox"));
+						data.add(item);
+						// content.append(message.getString("text")).append("\n");
 					}
 
-					textView.setText(content.toString());
+					listView.setAdapter(adapter);
+
 					progressBar.setVisibility(View.GONE);
 					progressDialog.dismiss();
 				} else {
