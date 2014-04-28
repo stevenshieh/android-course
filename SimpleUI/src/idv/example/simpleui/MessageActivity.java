@@ -9,6 +9,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,7 +30,8 @@ public class MessageActivity extends Activity {
 	private static final String FILE_NAME = "message.txt";
 	private TextView textView;
 	private ProgressBar progressBar;
-
+	private ProgressDialog progressDialog;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -39,7 +41,12 @@ public class MessageActivity extends Activity {
 
 		textView = (TextView) findViewById(R.id.textView1);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setTitle("Message");
+		progressDialog.setMessage("Loading ... ");
+		progressDialog.setCancelable(false);
+		progressDialog.show();
+		
 		String text = getIntent().getStringExtra("text");
 
 		Log.d("debug", "intent extra:" + text);
@@ -82,6 +89,7 @@ public class MessageActivity extends Activity {
 
 					textView.setText(content.toString());
 					progressBar.setVisibility(View.GONE);
+					progressDialog.dismiss();
 				} else {
 					e.printStackTrace();
 				}
