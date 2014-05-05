@@ -4,7 +4,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +17,8 @@ import android.os.Build;
 import android.provider.MediaStore;
 
 public class MainActivity extends ActionBarActivity {
+
+	private static final int REQUEST_CODE_PHOTO = 5500;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +51,33 @@ public class MainActivity extends ActionBarActivity {
 			
 			Intent intent = new Intent();
 			intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-			startActivity(intent);
+//			startActivity(intent);
+			startActivityForResult(intent, REQUEST_CODE_PHOTO);
 			
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		
+		if(requestCode == REQUEST_CODE_PHOTO) {
+			if(resultCode == RESULT_OK) {
+				
+				Bitmap bitmap = intent.getParcelableExtra("data");
+				
+				
+				
+				Log.d("debug", "ok");
+			} else if(resultCode == RESULT_CANCELED) {
+				Log.d("debug", "canceled");
+			} else {
+				
+			}
+		}
+		
+		super.onActivityResult(requestCode, resultCode, intent);
 	}
 
 	/**
