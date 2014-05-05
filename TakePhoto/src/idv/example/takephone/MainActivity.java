@@ -1,9 +1,17 @@
 package idv.example.takephone;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -36,6 +44,9 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		Parse.initialize(this, "Cb0FjyvwU7rzs0upqWJmbFjEJUVjLvIx4dWyYF92",
+				"Y74WoAFwK2wfaEecA6UhboDgnUOotCHukTzCo3CT");
 
 		if (savedInstanceState == null) {
 			placeholderFragment = new PlaceholderFragment();
@@ -89,6 +100,10 @@ public class MainActivity extends ActionBarActivity {
 				// placeholderFragment.getImageView().setImageBitmap(bitmap);
 				// saveImage(bitmap);
 
+				saveImageToParse();
+
+				placeholderFragment.getImageView().setImageURI(
+						Uri.fromFile(getTargetFile(PHOTO_AUTO_PNG)));
 				placeholderFragment.getTextView().setText(
 						getTargetFile(PHOTO_AUTO_PNG).getPath());
 
@@ -125,7 +140,41 @@ public class MainActivity extends ActionBarActivity {
 				}
 			}
 		}
+	}
 
+	private void saveImageToParse() {
+		File image = getTargetFile(PHOTO_AUTO_PNG);
+
+		byte[] data = new byte[(int) image.length()];
+
+		try {
+			FileInputStream fis = new FileInputStream(image);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+			int readed = 0;
+			while ((readed = bis.read(data)) > -1) {
+
+			}
+
+			bis.close();
+			fis.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		final ParseFile parseFile = new ParseFile("filename.png", data);
+		parseFile.saveInBackground(new SaveCallback() {
+			@Override
+			public void done(ParseException arg0) {
+				String fileUrl = parseFile.getUrl().toString();
+				placeholderFragment.getTextView().setText(
+						fileUrl);
+				Log.d("ActivityManager", fileUrl);
+				// http://files.parse.com/4623bd84-98ee-4770-900e-981a28a1f8d7/4fc1ca51-0f5c-4926-87fb-953759814e20-filename.png
+			}
+		});
 	}
 
 	private File getTargetFile(String filename) {
