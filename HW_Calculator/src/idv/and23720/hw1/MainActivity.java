@@ -66,6 +66,8 @@ public class MainActivity extends ActionBarActivity {
 		private Button num8;
 		private Button num9;
 		private Button num0;
+		private Button numPoint;
+
 		private Button buttonC;
 		private Button buttonAdd;
 		private Button buttonSub;
@@ -98,6 +100,7 @@ public class MainActivity extends ActionBarActivity {
 			num8 = (Button) rootView.findViewById(R.id.button8);
 			num9 = (Button) rootView.findViewById(R.id.button9);
 			num0 = (Button) rootView.findViewById(R.id.button0);
+			numPoint = (Button) rootView.findViewById(R.id.buttonPoint);
 			buttonC = (Button) rootView.findViewById(R.id.buttonC);
 			buttonAdd = (Button) rootView.findViewById(R.id.buttonAdd);
 			buttonSub = (Button) rootView.findViewById(R.id.buttonMinus);
@@ -111,8 +114,8 @@ public class MainActivity extends ActionBarActivity {
 				public void onClick(View v) {
 					Button button = (Button) v;
 					String value = button.getText().toString();
-					
-					if(flush) {
+
+					if ( flush) {
 						inputText.setText(value);
 						flush = false;
 					} else {
@@ -137,6 +140,7 @@ public class MainActivity extends ActionBarActivity {
 			num8.setOnClickListener(clickListener);
 			num9.setOnClickListener(clickListener);
 			num0.setOnClickListener(clickListener);
+			numPoint.setOnClickListener(clickListener);
 
 			buttonC.setOnClickListener(new OnClickListener() {
 				@Override
@@ -148,16 +152,29 @@ public class MainActivity extends ActionBarActivity {
 			OnClickListener operatorClickListener = new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					double newNum = Double.parseDouble(inputText.getText()
-							.toString());
-					calc = newNum;
-					inputText.setText("");
-					calcing = true;
-
 					Button o = (Button) v;
 					String oter = o.getText().toString();
-					op = getOp(oter);
+					try {
+						if (op == null) {
+							double newNum = getInputNumber();
+							calc = newNum;
+							inputText.setText("");
+							calcing = true;
+							flush = false;
+							op = getOp(oter);
+						} else {
+
+							double calcing2 = calcing(getInputNumber());
+							calc = calcing2;
+							inputText.setText("");
+							op = getOp(oter);
+						}
+					} catch (NumberFormatException e) {
+						Log.d("debug",
+								"button operator exception. " + e.getMessage());
+					}
 				}
+
 			};
 			buttonAdd.setOnClickListener(operatorClickListener);
 			buttonSub.setOnClickListener(operatorClickListener);
@@ -167,26 +184,39 @@ public class MainActivity extends ActionBarActivity {
 
 				@Override
 				public void onClick(View v) {
-					String second = inputText.getText().toString();
-					double s = 0.0d;
-					try {
-						s = Double.parseDouble(second);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
+					if (op != null) {
+						inputText.setText(String
+								.valueOf(calcing(getInputNumber())));
+						calcing = false;
+						calc = 0.0d;
+						op = null;
 					}
-
-					if (s != 0.0d) {
-						double result = op.calc(calc, s);
-						inputText.setText(Double.toString(result));
-					}
-					calcing = false;
-					calc = 0.0d;
-					op = null;
 					flush = true;
 				}
+
 			});
 
 			return rootView;
+		}
+
+		private double getInputNumber() {
+			String second = inputText.getText().toString();
+			double newNum = Double.parseDouble(second);
+			return newNum;
+		}
+
+		private double calcing(double second) {
+			double result = 0.0d;
+			try {
+				if (flush == false) {
+					if (second != 0.0d) {
+						result = op.calc(calc, second);
+					}
+				}
+			} catch (Exception e) {
+				Log.d("debug", "button flush exception. " + e.getMessage());
+			}
+			return result;
 		}
 
 		public Operator getOp(String op) {
@@ -201,7 +231,7 @@ public class MainActivity extends ActionBarActivity {
 			} else if ("/".equals(op)) {
 				return new DividedOperator();
 			}
-			return null;
+			throw new IllegalArgumentException(op);
 		}
 	}
 
