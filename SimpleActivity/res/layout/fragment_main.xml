@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="idv.example.simpleactivity.MainActivity$PlaceholderFragment" >
+    tools:context="idv.example.simpleactivity.fragment.PlaceholderFragment" >
 
     <TextView
         android:id="@+id/textView1"
@@ -42,5 +42,14 @@
         android:layout_toRightOf="@+id/button2"
         android:onClick="gotoView"
         android:text="3" />
+
+    <Button
+        android:id="@+id/gotoMyFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button1"
+        android:layout_below="@+id/button1"
+        android:onClick="replaceFragment"
+        android:text="goto my fragment" />
 
 </RelativeLayout>

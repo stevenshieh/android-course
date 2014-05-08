@@ -1,8 +1,11 @@
 package idv.example.simpleactivity;
 
+import idv.example.simpleactivity.fragment.MyFragment;
+import idv.example.simpleactivity.fragment.PlaceholderFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,6 +95,26 @@ public class MainActivity extends ActionBarActivity {
 
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
+	
+	public void replaceFragment(View view) {
+		
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		
+		switch (view.getId()) {
+		case R.id.gotoMyFragment:
+			ft.replace(R.id.container, new MyFragment());
+			break;
+		case R.id.gotoOriginFragment:
+			ft.replace(R.id.container, new PlaceholderFragment());
+			break;
+		default:
+			break;
+		}
+		
+		ft.commit();
+		
+	}
+	
 
 	@Override
 	protected void onDestroy() {
@@ -133,23 +156,6 @@ public class MainActivity extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		super.onStop();
 		Log.d("debug", "MainActivity onStop");
-	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
 	}
 
 }
