@@ -1,5 +1,13 @@
 package idv.and23720.hw1;
 
+import idv.and23720.hw1.operator.AddOperator;
+import idv.and23720.hw1.operator.DividedOperator;
+import idv.and23720.hw1.operator.MultiOperator;
+import idv.and23720.hw1.operator.Operator;
+import idv.and23720.hw1.operator.SubOperator;
+
+import java.math.BigDecimal;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -53,7 +61,7 @@ public class MainActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		double calc = 0.0d;
+		BigDecimal calc = new BigDecimal("0");
 
 		private EditText inputText;
 		private Button num1;
@@ -115,7 +123,7 @@ public class MainActivity extends ActionBarActivity {
 					Button button = (Button) v;
 					String value = button.getText().toString();
 
-					if ( flush) {
+					if (flush) {
 						inputText.setText(value);
 						flush = false;
 					} else {
@@ -156,22 +164,20 @@ public class MainActivity extends ActionBarActivity {
 					String oter = o.getText().toString();
 					try {
 						if (op == null) {
-							double newNum = getInputNumber();
+							BigDecimal newNum = getInputNumber();
 							calc = newNum;
-							inputText.setText("");
 							calcing = true;
 							flush = false;
-							op = getOp(oter);
 						} else {
-
-							double calcing2 = calcing(getInputNumber());
+							BigDecimal calcing2 = calcing(getInputNumber());
 							calc = calcing2;
-							inputText.setText("");
-							op = getOp(oter);
 						}
 					} catch (NumberFormatException e) {
 						Log.d("debug",
 								"button operator exception. " + e.getMessage());
+					} finally {
+						inputText.setText("");
+						op = getOp(oter);
 					}
 				}
 
@@ -188,7 +194,7 @@ public class MainActivity extends ActionBarActivity {
 						inputText.setText(String
 								.valueOf(calcing(getInputNumber())));
 						calcing = false;
-						calc = 0.0d;
+						calc = new BigDecimal("0");
 						op = null;
 					}
 					flush = true;
@@ -199,17 +205,16 @@ public class MainActivity extends ActionBarActivity {
 			return rootView;
 		}
 
-		private double getInputNumber() {
+		private BigDecimal getInputNumber() {
 			String second = inputText.getText().toString();
-			double newNum = Double.parseDouble(second);
-			return newNum;
+			return new BigDecimal(second);
 		}
 
-		private double calcing(double second) {
-			double result = 0.0d;
+		private BigDecimal calcing(BigDecimal second) {
+			BigDecimal result = new BigDecimal("0");
 			try {
 				if (flush == false) {
-					if (second != 0.0d) {
+					if (second.compareTo(new BigDecimal("0")) != 0) {
 						result = op.calc(calc, second);
 					}
 				}
