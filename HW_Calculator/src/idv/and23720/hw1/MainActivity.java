@@ -190,14 +190,19 @@ public class MainActivity extends ActionBarActivity {
 
 				@Override
 				public void onClick(View v) {
-					if (op != null) {
-						inputText.setText(String
-								.valueOf(calcing(getInputNumber())));
-						calcing = false;
-						calc = new BigDecimal("0");
-						op = null;
+					try {
+						if (op != null) {
+							inputText.setText(String
+									.valueOf(calcing(getInputNumber())));
+							calcing = false;
+							calc = new BigDecimal("0");
+							op = null;
+						}
+						flush = true;
+					} catch (NumberFormatException e) {
+						Log.d("debug",
+								"button flush(=) exception. " + e.getMessage());
 					}
-					flush = true;
 				}
 
 			});
