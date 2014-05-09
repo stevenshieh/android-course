@@ -199,9 +199,9 @@ public class MainActivity extends ActionBarActivity {
 							op = null;
 						}
 						flush = true;
-					} catch (Exception e) {
+					} catch (NumberFormatException e) {
 						Log.d("debug",
-								"button flush exception. " + e.getMessage());
+								"button flush(=) exception. " + e.getMessage());
 					}
 				}
 
