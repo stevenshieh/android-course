@@ -28,7 +28,10 @@ import android.os.Build;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.PushService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -48,7 +51,10 @@ public class MainActivity extends ActionBarActivity {
 
 		Parse.initialize(this, "52SSxGlsI9z7U01hQAXXIi0lFa1n183C2YGwFnZG",
 				"eNQC2poRiw5SHwWJVTDLOaM0vuFwYsnHYbQHITkP");
-		
+		PushService.setDefaultPushCallback(this, MainActivity.class);
+		ParseInstallation.getCurrentInstallation().saveInBackground();
+		// When users indicate they are no longer Giants fans, we unsubscribe them.
+		PushService.subscribe(this, "all", MainActivity.class);
 	}
 
 	@Override
@@ -147,6 +153,11 @@ public class MainActivity extends ActionBarActivity {
 			if (encrypt.isChecked()) {
 				text = String.valueOf(text.hashCode());
 			}
+			
+			ParsePush push = new ParsePush();
+			push.setChannel("all");
+			push.setMessage(text);
+			push.sendInBackground();
 
 			Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 
