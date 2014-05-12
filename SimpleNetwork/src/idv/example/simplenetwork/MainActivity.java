@@ -10,21 +10,30 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
+
+	PlaceholderFragment placeholderFragment = new PlaceholderFragment();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +42,12 @@ public class MainActivity extends ActionBarActivity {
 
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+					.add(R.id.container, placeholderFragment).commit();
 		}
 
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-				.permitAll().build();
-		StrictMode.setThreadPolicy(policy);
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+//				.permitAll().build();
+//		StrictMode.setThreadPolicy(policy);
 
 	}
 
@@ -62,6 +71,56 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void search(View view) {
+
+		EditText editText = placeholderFragment.getEditText();
+		searchFromGoogleMaps(editText.getText().toString());
+
+	}
+
+	private void searchFromGoogleMaps(String locate) {
+		final String url = "http://maps.googleapis.com/maps/api/geocode/json?address="
+				+ locate + "&sensor=true";
+
+		AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+
+			@Override
+			protected String doInBackground(Void... params) {
+				String result = "{}";
+				try {
+					result = placeholderFragment.fetchByApache(url);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(String result) {
+
+				try {
+					JSONObject json = new JSONObject(result);
+
+					JSONArray results = json.getJSONArray("results");
+
+					for (int i = 0; i < result.length(); i++) {
+						String address = "address:"+results.getJSONObject(i).getString(
+								"formatted_address");
+						Log.d("debug", address);
+						Toast.makeText(getApplication(), address,
+								Toast.LENGTH_SHORT).show();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+			}
+
+		};
+
+		task.execute();
+	}
+
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
@@ -70,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
 		public PlaceholderFragment() {
 		}
 
-		private TextView textView;
+		private EditText editText;
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,19 +137,12 @@ public class MainActivity extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
 
-			textView = (TextView) rootView.findViewById(R.id.textView1);
-
-			String website = "http://www.ntu.edu.tw/";
-			try {
-				textView.setText(fetchByApache(website));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			editText = (EditText) rootView.findViewById(R.id.editText1);
 
 			return rootView;
 		}
 
-		private String fetchByApache(String urlString) throws IOException {
+		public String fetchByApache(String urlString) throws IOException {
 
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(urlString);
@@ -117,6 +169,15 @@ public class MainActivity extends ActionBarActivity {
 
 			return result;
 		}
+
+		public EditText getEditText() {
+			return editText;
+		}
+
+		public void setEditText(EditText editText) {
+			this.editText = editText;
+		}
+
 	}
 
 }
