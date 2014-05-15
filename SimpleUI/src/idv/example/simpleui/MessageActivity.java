@@ -86,7 +86,7 @@ public class MessageActivity extends Activity {
 
 	private void loadData() {
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("Message");
-		query.orderByAscending("createdAt");
+		query.orderByDescending("createdAt");
 		query.findInBackground(new FindCallback<ParseObject>() {
 			public void done(List<ParseObject> messages, ParseException e) {
 				if (e == null) {
